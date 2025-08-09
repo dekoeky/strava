@@ -1,0 +1,73 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Home page";
+}
+
+<section>
+    @if (User?.Identity?.IsAuthenticated != true)
+    {
+        <p>Please <a href="/login">login with Strava</a> to continue.</p>
+    }
+    else
+    {
+        <div style="display:flex;gap:.5rem;margin:.5rem 0">
+            <button id="btnMe">Load Profile</button>
+            <button id="btnActs">Load Activities</button>
+        </div>
+
+        <pre id="me" style="padding:.75rem;border:1px solid #ddd;overflow:auto"></pre>
+
+        <table id="acts" border="1" cellpadding="6" cellspacing="0" style="margin-top:.75rem;width:100%;border-collapse:collapse;display:none">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Distance (m)</th>
+                    <th>Moving Time (s)</th>
+                    <th>Start (UTC)</th>
+                    <th>Type</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+
+        <script>
+            async function call(url) {
+                const r = await fetch(url, { credentials: "same-origin" });
+                if (r.status === 401) { window.location = "/login"; return null; }
+                if (!r.ok) throw new Error(await r.text());
+                return await r.json();
+            }
+
+            document.getElementById("btnMe").onclick = async () => {
+                const data = await call("/api/me");
+                if (!data) return;
+                document.getElementById("me").textContent = JSON.stringify(data, null, 2);
+            };
+
+            document.getElementById("btnActs").onclick = async () => {
+                const data = await call("/api/activities?perPage=20");
+                if (!data) return;
+                const tbl = document.getElementById("acts");
+                const body = tbl.querySelector("tbody");
+                body.innerHTML = "";
+                for (const a of data) {
+                    const tr = document.createElement("tr");
+                    tr.innerHTML =
+                        `<td>${a.name ?? ""}</td>` +
+                        `<td>${a.distance ?? ""}</td>` +
+                        `<td>${a.moving_time ?? ""}</td>` +
+                        `<td>${a.start_date ?? ""}</td>` +
+                        `<td>${a.type ?? ""}</td>`;
+                    body.appendChild(tr);
+                }
+                tbl.style.display = "";
+            };
+        </script>
+    }
+</section>
+
+<div class="text-center">
+    <h1 class="display-4">Welcome</h1>
+    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+</div>

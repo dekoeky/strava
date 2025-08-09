@@ -4,10 +4,15 @@ namespace Strava.Client.Models;
 
 public class DetailedAthlete
 {
+    public const string JsonId = "id";
+    public const string JsonUsername = "username";
+    public const string JsonFirstName = "firstname";
+    public const string JsonLastName = "lastname";
+
     /// <summary>
     /// The unique identifier of the athlete
     /// </summary>
-    [JsonPropertyName("id")] public long Id { get; set; }
+    [JsonPropertyName(JsonId)] public long Id { get; set; }
 
     /// <summary>
     /// Resource state, indicates level of detail.
@@ -17,12 +22,12 @@ public class DetailedAthlete
     /// <summary>
     /// The athlete's first name.
     /// </summary>
-    [JsonPropertyName("firstname")] public string FirstName { get; set; }
+    [JsonPropertyName(JsonFirstName)] public string FirstName { get; set; }
 
     /// <summary>
     /// The athlete's last name.
     /// </summary>
-    [JsonPropertyName("lastname")] public string LastName { get; set; }
+    [JsonPropertyName(JsonLastName)] public string LastName { get; set; }
 
     /// <summary>
     /// URL to a 62x62 pixel profile picture.
